@@ -20,3 +20,6 @@ Análisis de los datos de campañas de marketing de una empresa Fintech para con
 ### 5. Interpretación y Recomendaciones
 	- Identificación de patrones y factores clave que contribuyen al éxito de las campañas de marketing.
 	- Formulación de recomendaciones estratégicas para mejorar la efectividad de futuras campañas de marketing.
+
+## Contexto
+Las campañas de marketing se basan en llamadas telefónicas que tuvieron lugar de Mayo 2018 a Noviembre 2020. Los registros vienen ordenados por fecha, pero no hay una variable disponible con la fecha completa en el dataset original. Es importante también tener en cuenta que es posible que en algunos casos se requiera de más de un contacto con el mismo cliente para determinar si el depósito acaba siendo contratado no ('sí') o no ('no'). 
