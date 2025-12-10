@@ -186,6 +186,24 @@ def exploracion_datos(df):
     return df_exploracion
 
 
+# ### Exploracion de datos de varios DataFrames
+
+# In[ ]:
+
+
+def exploracion_varios_dataframes(dict_data):
+    dict_exploracion = {}
+
+    for k, v in dict_data.items():
+        print(f"EXPLORANDO: {k}")
+        print("="*120)
+
+        exploracion = exploracion_datos(v)
+        dict_exploracion[k] = exploracion
+
+        print("\n" + "="*120 + "\n")
+
+
 # ## Funciones de limpieza de datos
 
 # ### Funcion para normalizar textos
