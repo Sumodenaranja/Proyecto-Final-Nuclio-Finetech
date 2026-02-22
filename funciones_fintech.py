@@ -259,6 +259,8 @@ def generar_combinaciones_de_dos(elementos):
 
 def evaluar_informacion_mutua(df, variables_a_combinar,nombres_variables=None, threshold=0.05):
     # Todos los que sean very weak o weak no nos interesaran, por eso marcaremos el threshold a 0.05
+    combinaciones_relevantes = []
+
     for j,k in variables_a_combinar:
         df["interaccion"] = (
             df[j].astype(str) + "_" + df[k].astype(str)
@@ -280,19 +282,52 @@ def evaluar_informacion_mutua(df, variables_a_combinar,nombres_variables=None, t
             # print("No hay ninguna relacion en considerable en esta interaccion")
             pass
         else:
-            print()
+            combinaciones_relevantes.append((j,k))
             if nombres_variables is not None:
                 print(nombres_variables[j] + " x " + nombres_variables[k])
             else:
                 print(j + " x " + k)
 
             display(relationship_table)
+    return combinaciones_relevantes
 
+
+# In[ ]:
+
+
+def heatmap_multivariable(df, combinaciones, nombres_variables):
+    for j, k in combinaciones:
+        plt.figure(figsize=(10,5))
+
+        pivot = pd.pivot_table(
+            df,
+            values="subscribed_term_deposit",
+            index=j,
+            columns=k,
+            aggfunc="mean"
+        )
+
+        pivot = pivot.loc[pivot.index != "unknown", :]
+        pivot = pivot.loc[:, pivot.columns != "unknown"]
+
+        sns.heatmap(
+            pivot,
+            annot=True,
+            fmt=".2%",
+            cmap="Blues",
+            vmin=0,
+            vmax=1
+        )
+
+        plt.title(nombres_variables[j] + " x " + nombres_variables[k])
+        plt.ylabel(nombres_variables[j])
+        plt.xlabel(nombres_variables[k])
+        plt.show()
 
 
 # ## Transformar el notebook en un archivo .py
 
-# In[1]:
+# In[3]:
 
 
 
