@@ -32,8 +32,6 @@ import seaborn as sns
 import plotly.express as px
 import matplotlib.ticker as mtick
 from matplotlib.ticker import PercentFormatter
-from sklearn.feature_selection import mutual_info_classif
-
 
 # Textos
 import unicodedata
@@ -43,8 +41,10 @@ import re
 # Estadistica
 from scipy import stats
 from scipy.stats import chi2_contingency
+from sklearn.preprocessing import LabelEncoder
+from statsmodels.stats.proportion import proportions_ztest
+from sklearn.feature_selection import mutual_info_classif
 from itertools import combinations
-
 
 
 # ## Funciones limpieza y preparacion de datos
@@ -250,6 +250,248 @@ def grafico_correlacion_spearman(df,df_2,title):
 # In[ ]:
 
 
+# Funcion para realizar un bucle de analisis de dataframe con graficos 3 plot.
+def analisis_subscribed_term_deposit_3plot(df,col1,col2,col3):
+    # Graficamos las variables
+    fig, axes = plt.subplots(1, 3, figsize=(16, 6))
+
+    # Gráfico col1
+    axes[0].bar(
+        df[col1].index.astype(str),
+        df[col1]['percentage'], 
+        color='steelblue',
+        edgecolor='black',
+        alpha=0.7)
+    axes[0].set_title(f'Distribución de {col1} con deposito contratado', fontsize=12, fontweight='bold')
+    axes[0].set_ylabel('%')
+    axes[0].tick_params(axis='x', rotation=0, labelsize=10)
+    axes[0].grid(axis='y', alpha=0.3)
+
+    # Gráfico col2
+    axes[1].bar(
+        df[col2].index.astype(str),
+        df[col2]['percentage'],
+        color='coral',
+        edgecolor='black',
+        alpha=0.7)
+    axes[1].set_title(f'Distribución de {col2} con deposito contratado', fontsize=12, fontweight='bold')
+    axes[1].set_ylabel('%')
+    axes[1].tick_params(axis='x', rotation=45)
+    plt.setp(axes[1].get_xticklabels(), ha='right')
+    axes[1].grid(axis='y', alpha=0.3)
+
+    # Gráfico col3
+    axes[2].bar(
+        df[col3].index.astype(str),
+        df[col3]['percentage'],
+        color='mediumseagreen',
+        edgecolor='black',
+        alpha=0.7)
+    axes[2].set_title(f'Distribución de {col3} con deposito contratado', fontsize=12, fontweight='bold')
+    axes[2].set_ylabel('%')
+    axes[2].grid(axis='y', alpha=0.3)
+
+
+    display(df[col1].T)
+    print('*'*100)
+    display(df[col2].T)
+    print('*'*100)
+    display(df[col3].T)
+    print('*'*100)
+    plt.tight_layout()
+    plt.show()
+
+
+# In[ ]:
+
+
+# Funcion para realizar un bucle de analisis de dataframe con graficos 6 plot.
+def analisis_subscribed_term_deposit_6plot(df,col1,col2,col3,col4,col5,col6):
+    # Graficamos las variables
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+
+    # Gráfico col1
+    axes[0, 0].bar(
+        df[col1].index.astype(str),
+        df[col1]['percentage'], 
+        color='steelblue',
+        edgecolor='black',
+        alpha=0.7)
+    axes[0, 0].set_title(f'Dist. {col1} dep-contratado', fontsize=12, fontweight='bold')
+    axes[0, 0].set_ylabel('%')
+    axes[0, 0].tick_params(axis='x', rotation=0, labelsize=10)
+    axes[0, 0].grid(axis='y', alpha=0.3)
+
+    # Gráfico col2
+    axes[0, 1].bar(
+        df[col2].index.astype(str),
+        df[col2]['percentage'],
+        color='coral',
+        edgecolor='black',
+        alpha=0.7)
+    axes[0, 1].set_title(f'Dist. {col2} dep-contratado', fontsize=12, fontweight='bold')
+    axes[0, 1].set_ylabel('%')
+    axes[0, 1].tick_params(axis='x', rotation=45)
+    plt.setp(axes[0, 1].get_xticklabels(), ha='right')
+    axes[0, 1].grid(axis='y', alpha=0.3)
+
+    # Gráfico col3
+    axes[1, 0].bar(
+        df[col3].index.astype(str),
+        df[col3]['percentage'],
+        color='mediumseagreen',
+        edgecolor='black',
+        alpha=0.7)
+    axes[1, 0].set_title(f'Dist. {col3} dep-contratado', fontsize=12, fontweight='bold')
+    axes[1, 0].set_ylabel('%')
+    axes[1, 0].grid(axis='y', alpha=0.3)
+
+    # Gráfico col4
+    axes[1, 1].bar(
+        df[col4].index.astype(str),
+        df[col4]['percentage'],
+        color='orange',
+        edgecolor='black',
+        alpha=0.7)
+    axes[1, 1].set_title(f'Dist. {col4} dep-contratado', fontsize=12, fontweight='bold')
+    axes[1, 1].set_ylabel('%')
+    axes[1, 1].tick_params(axis='x', rotation=45)
+    plt.setp(axes[1, 1].get_xticklabels(), ha='right')
+    axes[1, 1].grid(axis='y', alpha=0.3)
+
+    # Gráfico col5
+    axes[0, 2].bar(
+        df[col5].index.astype(str),
+        df[col5]['percentage'],
+        color='mediumpurple',
+        edgecolor='black',
+        alpha=0.7)
+    axes[0, 2].set_title(f'Dist. {col5} dep-contratado', fontsize=12, fontweight='bold')
+    axes[0, 2].set_ylabel('%')
+    axes[0, 2].tick_params(axis='x', rotation=45)
+    plt.setp(axes[0, 2].get_xticklabels(), ha='right')
+    axes[0, 2].grid(axis='y', alpha=0.3)
+
+    # Gráfico col6
+    axes[1, 2].bar(
+        df[col6].index.astype(str),
+        df[col6]['percentage'],
+        color='gold',
+        edgecolor='black',
+        alpha=0.7)
+    axes[1, 2].set_title(f'Dist. {col6} dep-contratado', fontsize=12, fontweight='bold')
+    axes[1, 2].set_ylabel('%')
+    axes[1, 2].tick_params(axis='x', rotation=45)
+    plt.setp(axes[1, 2].get_xticklabels(), ha='right')
+    axes[1, 2].grid(axis='y', alpha=0.3)
+
+    display(df[col1].T)
+    print('*'*100)
+    display(df[col2].T)
+    print('*'*100)
+    display(df[col3].T)
+    print('*'*100)
+    display(df[col4].T)
+    print('*'*100)
+    display(df[col5].T)
+    print('*'*100)
+    display(df[col6].T)
+    print('*'*100)
+    plt.show()
+
+
+# In[ ]:
+
+
+# Funcion para realizar un bucle de analisis de dataframe.
+def bucle_analisis_dataframe(df,df_analizar,columnas):
+
+    for col in columnas:
+        df_temp = (
+            df_analizar
+            .groupby(col)
+            .size()
+            .reset_index(name='count'))
+
+        df_temp['percentage'] = df_temp['count'] / df_temp['count'].sum() * 100
+        df_temp = df_temp[df_temp['count'] > 0]
+        df_temp = df_temp.sort_values(by='count', ascending=False)
+        df_temp = df_temp.set_index(col)
+        df[col]=df_temp
+
+
+# In[ ]:
+
+
+# Funcion para realizar un bucle de analisis de dataframe con graficos 4 plot.
+def analisis_subscribed_term_deposit_4plot(df,col1,col2,col3,col4):
+    # Graficamos las variables
+    fig, axes = plt.subplots(2, 2, figsize=(16, 10))
+
+    # Gráfico col1
+    axes[0, 0].bar(
+        df[col1].index.astype(str),
+        df[col1]['percentage'], 
+        color='steelblue',
+        edgecolor='black',
+        alpha=0.7)
+    axes[0, 0].set_title(f'Distribución de {col1} con deposito contratado', fontsize=12, fontweight='bold')
+    axes[0, 0].set_ylabel('%')
+    axes[0, 0].tick_params(axis='x', rotation=0, labelsize=10)
+    axes[0, 0].grid(axis='y', alpha=0.3)
+
+    # Gráfico col2
+    axes[0, 1].bar(
+        df[col2].index.astype(str),
+        df[col2]['percentage'],
+        color='coral',
+        edgecolor='black',
+        alpha=0.7)
+    axes[0, 1].set_title(f'Distribución de {col2} con deposito contratado', fontsize=12, fontweight='bold')
+    axes[0, 1].set_ylabel('%')
+    axes[0, 1].tick_params(axis='x', rotation=45)
+    plt.setp(axes[0, 1].get_xticklabels(), ha='right')
+    axes[0, 1].grid(axis='y', alpha=0.3)
+
+    # Gráfico col3
+    axes[1, 0].bar(
+        df[col3].index.astype(str),
+        df[col3]['percentage'],
+        color='mediumseagreen',
+        edgecolor='black',
+        alpha=0.7)
+    axes[1, 0].set_title(f'Distribución de {col3} con deposito contratado', fontsize=12, fontweight='bold')
+    axes[1, 0].set_ylabel('%')
+    axes[1, 0].grid(axis='y', alpha=0.3)
+
+    # Gráfico col4
+    axes[1, 1].bar(
+        df[col4].index.astype(str),
+        df[col4]['percentage'],
+        color='orange',
+        edgecolor='black',
+        alpha=0.7)
+    axes[1, 1].set_title(f'Distribución de {col4} con deposito contratado', fontsize=12, fontweight='bold')
+    axes[1, 1].set_ylabel('%')
+    axes[1, 1].tick_params(axis='x', rotation=45)
+    plt.setp(axes[1, 1].get_xticklabels(), ha='right')
+    axes[1, 1].grid(axis='y', alpha=0.3)
+
+    display(df[col1].T)
+    print('*'*100)
+    display(df[col2].T)
+    print('*'*100)
+    display(df[col3].T)
+    print('*'*100)
+    display(df[col4].T)
+    print('*'*100)
+    plt.tight_layout()
+    plt.show()
+
+
+# In[ ]:
+
+
 def generar_combinaciones_de_dos(elementos):
     return list(combinations(elementos,2))
 
@@ -299,7 +541,7 @@ def heatmap_multivariable(df, combinaciones, nombres_variables):
     for j, k in combinaciones:
         plt.figure(figsize=(10,5))
 
-        pivot = pd.pivot_table(
+        pivot = pd.crosstab(
             df,
             values="subscribed_term_deposit",
             index=j,
@@ -327,7 +569,8 @@ def heatmap_multivariable(df, combinaciones, nombres_variables):
 
 # ## Transformar el notebook en un archivo .py
 
-# In[3]:
+# In[ ]:
 
 
+get_ipython().system('jupyter nbconvert --to script funciones_fintech.ipynb --output-dir ..')
 
