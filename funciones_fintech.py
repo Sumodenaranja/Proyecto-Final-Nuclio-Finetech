@@ -537,40 +537,47 @@ def evaluar_informacion_mutua(df, variables_a_combinar,nombres_variables=None, t
 # In[ ]:
 
 
-def heatmap_multivariable(df, combinaciones, nombres_variables):
-    for j, k in combinaciones:
-        plt.figure(figsize=(10,5))
+def heatmap_multivariable(df, variables_a_combinar, variable_binaria, nombres_variables):
+    # Pivot table: media de la variable binaria = probabilidad de Y=1
+    df_pivot = df.pivot_table(
+        index=variables_a_combinar[0],
+        columns=variables_a_combinar[1],
+        values=variable_binaria,
+        aggfunc='mean'
+    )
 
-        pivot = pd.crosstab(
-            df,
-            values="subscribed_term_deposit",
-            index=j,
-            columns=k,
-            aggfunc="mean"
-        )
+    # Creamos la figura
+    plt.figure(figsize=(10, 6))
 
-        pivot = pivot.loc[pivot.index != "unknown", :]
-        pivot = pivot.loc[:, pivot.columns != "unknown"]
+    # Heatmap
+    sns.heatmap(
+        df_pivot,
+        annot=True,
+        fmt=".2%",
+        cmap="YlGnBu",
+        linewidths=0.5,
+        linecolor="gray",
+        cbar_kws={'label': 'Probabilidad', 'format': PercentFormatter(1)}
+    )
 
-        sns.heatmap(
-            pivot,
-            annot=True,
-            fmt=".2%",
-            cmap="Blues",
-            vmin=0,
-            vmax=1
-        )
+    # Títulos y etiquetas
+    plt.title(
+        nombres_variables[variables_a_combinar[0]] + " X " +
+        nombres_variables[variables_a_combinar[1]],
+        fontsize=14,
+        fontweight='bold',
+        pad=20
+    )
+    plt.xlabel(nombres_variables[variables_a_combinar[1]], fontsize=12)
+    plt.ylabel(nombres_variables[variables_a_combinar[0]], fontsize=12)
 
-        plt.title(nombres_variables[j] + " x " + nombres_variables[k])
-        plt.ylabel(nombres_variables[j])
-        plt.xlabel(nombres_variables[k])
-        plt.show()
+    plt.tight_layout()
+    plt.show()
 
 
 # ## Transformar el notebook en un archivo .py
 
-# In[ ]:
+# In[12]:
 
 
-get_ipython().system('jupyter nbconvert --to script funciones_fintech.ipynb --output-dir ..')
 
